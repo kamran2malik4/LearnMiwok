@@ -1,20 +1,22 @@
 package com.example.android.miwok;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.util.Log;
+
+import androidx.fragment.app.Fragment;
+
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class FamilyActivity extends AppCompatActivity {
+public class NumbersFragment extends Fragment {
 
     private MediaPlayer m_player = null;
 
@@ -41,30 +43,30 @@ public class FamilyActivity extends AppCompatActivity {
             };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_family);
-
-        m_audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_numbers, container, false);
+        // Inflate the layout for this fragment
+        m_audioManager = (AudioManager)this.getActivity().getSystemService(Context.AUDIO_SERVICE);
 
         int audioResult = m_audioManager.requestAudioFocus(m_audioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
 
 
-        ListView list = findViewById(R.id.family_list);
+        ListView list = view.findViewById(R.id.numbers_list);
 
-        ArrayList<Word>words = new ArrayList<>();
-        words.add(new Word("Father", "әpә", R.drawable.family_father, R.raw.family_father));
-        words.add(new Word("Mother", "әṭa", R.drawable.family_mother, R.raw.family_mother));
-        words.add(new Word("Son", "angsi", R.drawable.family_son, R.raw.family_son));
-        words.add(new Word("Daughter", "tune", R.drawable.family_daughter, R.raw.family_daughter));
-        words.add(new Word("Older Brother", "taachi", R.drawable.family_older_brother, R.raw.family_older_brother));
-        words.add(new Word("Younger Brother", "chalitti", R.drawable.family_younger_brother, R.raw.family_younger_brother));
-        words.add(new Word("Older Sister", "teṭe", R.drawable.family_older_sister, R.raw.family_older_sister));
-        words.add(new Word("Younger Sister", "kolliti", R.drawable.family_younger_sister, R.raw.family_younger_sister));
-        words.add(new Word("Grandmother", "ama", R.drawable.family_grandmother, R.raw.family_grandmother));
-        words.add(new Word("Grandfather", "paapa", R.drawable.family_grandfather, R.raw.family_grandfather));
+        ArrayList<Word> words = new ArrayList<>();
+        words.add(new Word("One", "lutti", R.drawable.number_one, R.raw.number_one));
+        words.add(new Word("Two", "otiko", R.drawable.number_two, R.raw.number_two));
+        words.add(new Word("Three", "tolookosu", R.drawable.number_three, R.raw.number_three));
+        words.add(new Word("Four", "oyyisa", R.drawable.number_four, R.raw.number_four));
+        words.add(new Word("Five", "massokka", R.drawable.number_five, R.raw.number_five));
+        words.add(new Word("Six", "temmokka", R.drawable.number_six, R.raw.number_six));
+        words.add(new Word("Seven", "kenekaku", R.drawable.number_seven, R.raw.number_seven));
+        words.add(new Word("Eight", "kawinta", R.drawable.number_eight, R.raw.number_eight));
+        words.add(new Word("Nine", "wo'e", R.drawable.number_nine, R.raw.number_nine));
+        words.add(new Word("Ten", "na’aacha", R.drawable.number_ten, R.raw.number_ten));
 
-        WordTranslationAdapter adapter = new WordTranslationAdapter(this, words, getResources().getColor(R.color.category_family));
+        WordTranslationAdapter adapter = new WordTranslationAdapter(getActivity(), words, getResources().getColor(R.color.category_numbers));
 
         list.setAdapter(adapter);
 
@@ -75,17 +77,18 @@ public class FamilyActivity extends AppCompatActivity {
                 if(m_player != null){
                     releaseMedia();
                 }
-                m_player = MediaPlayer.create(getApplicationContext(), word.getAudioResourceID());
+                m_player = MediaPlayer.create(getActivity(), word.getAudioResourceID());
                 m_player.start();
                 m_player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mediaPlayer) {
-                        Toast.makeText(getApplicationContext(), "Done", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Done", Toast.LENGTH_SHORT).show();
                         releaseMedia();
                     }
                 });
             }
         });
+        return view;
     }
 
     private void releaseMedia(){
@@ -97,7 +100,7 @@ public class FamilyActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop(){
+    public void onStop(){
         super.onStop();
         releaseMedia();
     }

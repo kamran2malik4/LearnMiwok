@@ -22,6 +22,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 // import android.support.v7.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,43 +36,33 @@ public class MainActivity extends AppCompatActivity {
         // Set the content of the activity to use the activity_main.xml layout file
         setContentView(R.layout.activity_main);
 
-        //First find Views on our MainActivity Layout
-        TextView numbersCategory = findViewById(R.id.numbers);
-        TextView colorsCategory = findViewById(R.id.colors);
-        TextView familyCategory = findViewById(R.id.family);
-        TextView phrasesCategory = findViewById(R.id.phrases);
+        TabLayout tabs = findViewById(R.id.category_tabs);
+        ViewPager pages = findViewById(R.id.category_pages);
 
-        //Setting Click Listeners to open relevant category list
-        numbersCategory.setOnClickListener(new View.OnClickListener() {
+        FragmentManager fm = getSupportFragmentManager();
+
+        ViewPagerAdapter adapter = new ViewPagerAdapter(fm);
+
+        pages.setAdapter(adapter);
+
+        tabs.setTabsFromPagerAdapter(adapter);
+        pages.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
+        tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onClick(View view){
-                Intent i = new Intent(MainActivity.this, NumbersActivity.class);
-                startActivity(i);
+            public void onTabSelected(TabLayout.Tab tab) {
+                pages.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
             }
         });
 
-        colorsCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                Intent i = new Intent(MainActivity.this, ColorsActivity.class);
-                startActivity(i);
-            }
-        });
-
-        familyCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                Intent i = new Intent(MainActivity.this, FamilyActivity.class);
-                startActivity(i);
-            }
-        });
-
-        phrasesCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                Intent i = new Intent(MainActivity.this, PhrasesActivity.class);
-                startActivity(i);
-            }
-        });
     }
 }

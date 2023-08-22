@@ -1,20 +1,22 @@
 package com.example.android.miwok;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.util.Log;
+
+import androidx.fragment.app.Fragment;
+
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class ColorsActivity extends AppCompatActivity {
+public class PhrasesFragment extends Fragment {
 
     private MediaPlayer m_player = null;
 
@@ -26,16 +28,13 @@ public class ColorsActivity extends AppCompatActivity {
                 public void onAudioFocusChange(int focusChange) {
                     switch (focusChange){
                         case AudioManager.AUDIOFOCUS_LOSS:
-                            Log.i("Audios", "Audios");
                             releaseMedia();
                             m_audioManager.abandonAudioFocus(m_audioFocusChangeListener);
                         case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                            Log.i("Audios", "Audios");
                             if(m_player != null){
                                 m_player.pause();
                             }
                         case AudioManager.AUDIOFOCUS_GAIN:
-                            Log.i("Audios", "Audios");
                             if(m_player != null){
                                 m_player.start();
                             }
@@ -44,27 +43,29 @@ public class ColorsActivity extends AppCompatActivity {
             };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_colors);
-
-        m_audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_phrases, container, false);
+        m_audioManager = (AudioManager)this.getActivity().getSystemService(Context.AUDIO_SERVICE);
 
         int audioResult = m_audioManager.requestAudioFocus(m_audioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
 
-        ListView list = findViewById(R.id.colors_list);
 
-        ArrayList<Word>words = new ArrayList<>();
-        words.add(new Word("Red", "weṭeṭṭi", R.drawable.color_red, R.raw.color_red));
-        words.add(new Word("Green", "chokokki", R.drawable.color_green, R.raw.color_green));
-        words.add(new Word("Brown", "takakki", R.drawable.color_brown, R.raw.color_brown));
-        words.add(new Word("Gray", "tokoppi", R.drawable.color_gray, R.raw.color_gray));
-        words.add(new Word("Black", "kululli", R.drawable.color_black, R.raw.color_black));
-        words.add(new Word("White", "kelelli", R.drawable.color_white, R.raw.color_white));
-        words.add(new Word("Dusty Yellow", "toppisu", R.drawable.color_dusty_yellow, R.raw.color_dusty_yellow));
-        words.add(new Word("Mustard Yellow", "ch'wittu", R.drawable.color_mustard_yellow, R.raw.color_mustard_yellow));
+        ListView list = view.findViewById(R.id.phrases_list);
 
-        WordTranslationAdapter adapter = new WordTranslationAdapter(this, words, getResources().getColor(R.color.category_colors));
+        ArrayList<Word> words = new ArrayList<>();
+        words.add(new Word("Where are you going?", "minto wuksus", R.raw.phrase_where_are_you_going));
+        words.add(new Word("What is your name?", "tinnә oyaase'nә", R.raw.phrase_what_is_your_name));
+        words.add(new Word("My name is..", "oyaaset...", R.raw.phrase_my_name_is));
+        words.add(new Word("How are you feeling?", "michәksәs?", R.raw.phrase_how_are_you_feeling));
+        words.add(new Word("I’m feeling good.", "kuchi achit", R.raw.phrase_im_feeling_good));
+        words.add(new Word("Are you coming?", "әәnәs'aa?", R.raw.phrase_are_you_coming));
+        words.add(new Word("Yes, I’m coming.", "hәә’ әәnәm", R.raw.phrase_yes_im_coming));
+        words.add(new Word("I’m coming.", "әәnәm", R.raw.phrase_im_coming));
+        words.add(new Word("Let’s go.", "yoowutis", R.raw.phrase_lets_go));
+        words.add(new Word("Come here.", "әnni'nem", R.raw.phrase_come_here));
+
+        WordTranslationAdapter adapter = new WordTranslationAdapter(getActivity(), words, getResources().getColor(R.color.category_phrases));
 
         list.setAdapter(adapter);
 
@@ -75,17 +76,18 @@ public class ColorsActivity extends AppCompatActivity {
                 if(m_player != null){
                     releaseMedia();
                 }
-                m_player = MediaPlayer.create(getApplicationContext(), word.getAudioResourceID());
+                m_player = MediaPlayer.create(getActivity(), word.getAudioResourceID());
                 m_player.start();
                 m_player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mediaPlayer) {
-                        Toast.makeText(getApplicationContext(), "Done", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Done", Toast.LENGTH_SHORT).show();
                         releaseMedia();
                     }
                 });
             }
         });
+        return view;
     }
 
     private void releaseMedia(){
@@ -97,7 +99,7 @@ public class ColorsActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop(){
+    public void onStop(){
         super.onStop();
         releaseMedia();
     }
